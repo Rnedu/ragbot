@@ -12,6 +12,7 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
 PINECONE_INDEX_NAME = st.secrets["PINECONE_INDEX_NAME"]
 openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=openai.api_key)
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
 index = pc.Index(PINECONE_INDEX_NAME)
@@ -22,12 +23,10 @@ def chunk_text(text):
     return splitter.split_text(text)
 
 # Helper: Get embeddings from OpenAI
+# Generate embeddings
 def get_embedding(text):
-    response = openai.Embedding.create(
-        model="text-embedding-ada-002",
-        input=text
-    )
-    return response["data"][0]["embedding"]
+    response = client.embeddings.create(input=[text], model="text-embedding-ada-002")
+    return response.data[0].embedding
 
 # Upload PDF and process
 st.title("📄 Document Uploader to Pinecone")
@@ -73,10 +72,17 @@ if query:
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
+
+        ]
+    )
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"}
         ]
     )
+
 
     st.markdown("### Answer:")
     st.write(response.choices[0].message.content)
