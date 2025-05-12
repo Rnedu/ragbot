@@ -63,12 +63,13 @@ st.header("💬 Ask a question")
 
 query = st.text_input("Enter your question:")
 if query:
-    query_embedding = get_embedding(query)
-    results = index.query(vector=query_embedding, top_k=5, include_metadata=True)
+    query_emb = get_embedding(query)
+    results = index.search(
+        query={"inputs": {"vector": query_emb}, "top_k": 5},
+        fields=["chunk_text", "source"]
+    )
 
-    # Get top 5 chunks of text
-    context = "\n\n".join([match['metadata']['text'] for match in results['matches']])
-
+    context = "\n\n".join([match.metadata["chunk_text"] for match in results.matches])
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
