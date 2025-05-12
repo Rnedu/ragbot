@@ -65,6 +65,7 @@ query = st.text_input("Enter your question:")
 if query:
     query_emb = get_embedding(query)
     results = index.search(
+        namespace="default",
         query={"inputs": {"vector": query_emb}, "top_k": 5},
         fields=["chunk_text", "source"]
     )
