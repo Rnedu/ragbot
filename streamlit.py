@@ -12,9 +12,9 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
 PINECONE_INDEX_NAME = st.secrets["PINECONE_INDEX_NAME"]
 openai.api_key = OPENAI_API_KEY
-client = OpenAI(api_key=openai.api_key)
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-pc = Pinecone(api_key=PINECONE_API_KEY)
+pc = Pinecone(PINECONE_API_KEY)
 index = pc.Index(PINECONE_INDEX_NAME)
 
 # Helper: Split text into chunks
